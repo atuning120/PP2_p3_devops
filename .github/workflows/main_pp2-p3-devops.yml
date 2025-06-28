@@ -29,6 +29,9 @@ jobs:
           npm run build --if-present
       
       - name: Upload artifact for deployment job
+      - name: Verificar contenido del build
+        run: ls -R build
+
         uses: actions/upload-artifact@v4
         with:
           name: node-app
