@@ -13,23 +13,29 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'  # Más estable que 22.x para CRA
+          node-version: '20.x'
 
       - name: Install dependencies and build
         run: |
           npm install
           npm run build
 
-      - name: Upload build artifact
+      - name: Zip build folder
+        run: |
+          cd build
+          zip -r ../build.zip .
+
+      - name: Upload zipped build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: react-build
-          path: build/
+          name: react-build-zip
+          path: build.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -39,11 +45,11 @@ jobs:
       contents: read
 
     steps:
-      - name: Download build artifact
+      - name: Download zipped build artifact
         uses: actions/download-artifact@v4
         with:
-          name: react-build
-          path: build
+          name: react-build-zip
+          path: .
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -57,4 +63,4 @@ jobs:
         with:
           app-name: 'PP2-p3-devops'
           slot-name: 'Production'
-          package: build/
+          package: build.zip
