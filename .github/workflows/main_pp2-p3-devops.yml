@@ -21,17 +21,17 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install dependencies and build
+      - name: Install dependencies and build project
         run: |
-          npm install
+          npm ci
           npm run build
 
-      - name: Zip build folder
+      - name: Zip the production build
         run: |
           cd build
           zip -r ../build.zip .
 
-      - name: Upload zipped build artifact
+      - name: Upload zipped build
         uses: actions/upload-artifact@v4
         with:
           name: react-build-zip
@@ -45,11 +45,14 @@ jobs:
       contents: read
 
     steps:
-      - name: Download zipped build artifact
+      - name: Download zipped build
         uses: actions/download-artifact@v4
         with:
           name: react-build-zip
           path: .
+
+      - name: Confirm contents of build.zip (debugging)
+        run: unzip -l build.zip
 
       - name: Login to Azure
         uses: azure/login@v2
